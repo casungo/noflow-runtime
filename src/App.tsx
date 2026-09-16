@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { SemanticButton } from './components/SemanticButton'
 import { Surface } from './components/Surface'
 import { SemanticRuntime } from './runtime/createSemanticRuntime'
 import { MockSemanticPolicy } from './runtime/mockPolicy'
 import { HttpSemanticPolicy } from './runtime/httpPolicy'
-import type { PrimitiveName } from './runtime/types'
+import type { PrimitiveName, SemanticEvent } from './runtime/types'
 import { useSemanticRuntime } from './runtime/useSemanticRuntime'
 import type { DemoWorldState } from './demoTypes'
 
@@ -34,22 +34,45 @@ const suggestions = [
   'Continue',
 ]
 
+const confidenceThreshold = 0.65
+const confirmationThreshold = 0.7
+const fallbackSurface: PrimitiveName = 'welcome'
+
 function formatJson(value: unknown) {
   return JSON.stringify(value, null, 2)
 }
 
 export default function App() {
+  const [simulateFailure, setSimulateFailure] = useState(false)
+  const simulateFailureRef = useRef(simulateFailure)
+  simulateFailureRef.current = simulateFailure
+
   const runtime = useMemo(() => {
-    const policy =
+    const selectedPolicy =
       import.meta.env.VITE_POLICY_MODE === 'jev'
         ? new HttpSemanticPolicy<PrimitiveName, DemoWorldState>(
             import.meta.env.VITE_SEMANTIC_POLICY_URL ?? '/api/semantic-transition',
           )
         : new MockSemanticPolicy<DemoWorldState>()
+    const policy = {
+      decide(event: SemanticEvent<PrimitiveName, DemoWorldState>) {
+        if (simulateFailureRef.current) throw new Error('debug policy outage')
+        return selectedPolicy.decide(event)
+      },
+    }
 
     return new SemanticRuntime<PrimitiveName, DemoWorldState>(policy, initialWorld, {
       affordances: ['checkout', 'comparison', 'trial', 'support', 'login', 'dashboard', 'details', 'welcome'],
       initialSurface: 'welcome',
+      confidenceThreshold,
+      confirmationThreshold,
+      fallbackSurface,
+      confirm: (event, decision) =>
+        window.confirm(
+          `Confirm semantic action?\n\n"${event.target.label}" → ${
+            decision.action.type === 'present' ? decision.action.component : decision.action.type
+          }`,
+        ),
       reduceWorld: (world, decision) => ({
         ...world,
         session: {
@@ -233,6 +256,18 @@ export default function App() {
                 checked={snapshot.world.user.trialUsed}
                 onChange={(value) => updateUser('trialUsed', value)}
               />
+              <Toggle
+                label="simulate policy outage"
+                checked={simulateFailure}
+                onChange={setSimulateFailure}
+              />
+            </div>
+
+            <div className="debug-block">
+              <div className="inspector-label"><span>runtime gates</span><span>debug</span></div>
+              <div className="debug-row"><span>confidence minimum</span><strong>{confidenceThreshold * 100}%</strong></div>
+              <div className="debug-row"><span>confirmation minimum</span><strong>{confirmationThreshold * 100}%</strong></div>
+              <div className="debug-row"><span>fallback surface</span><strong>{fallbackSurface}</strong></div>
             </div>
 
             <div className="decision-card">
@@ -241,7 +276,7 @@ export default function App() {
                 <>
                   <div className="decision-main">
                     <div>
-                      <span>present</span>
+                      <span>applied action</span>
                       <strong>
                         {snapshot.lastDecision.action.type === 'present'
                           ? snapshot.lastDecision.action.component
@@ -255,6 +290,30 @@ export default function App() {
                   <div className="latency-line">
                     <span>{snapshot.lastDecision.model}</span>
                     <strong>{snapshot.lastDecision.latencyMs} ms</strong>
+                  </div>
+                  <div className="debug-status">
+                    <div className="debug-row">
+                      <span>resolution</span>
+                      <strong>{snapshot.lastDecision.resolution ?? 'policy'}</strong>
+                    </div>
+                    <div className="debug-row">
+                      <span>ambiguity</span>
+                      <strong>{Math.round((snapshot.lastDecision.safety?.ambiguity ?? 0) * 100)}%</strong>
+                    </div>
+                    <div className="debug-row">
+                      <span>needs confirmation</span>
+                      <strong>{Math.round((snapshot.lastDecision.safety?.requiresConfirmation ?? 0) * 100)}%</strong>
+                    </div>
+                    {snapshot.lastDecision.policyAction && (
+                      <div className="debug-row">
+                        <span>policy action</span>
+                        <strong>
+                          {snapshot.lastDecision.policyAction.type === 'present'
+                            ? snapshot.lastDecision.policyAction.component
+                            : snapshot.lastDecision.policyAction.type}
+                        </strong>
+                      </div>
+                    )}
                   </div>
                   <div className="candidate-list">
                     {snapshot.lastDecision.candidates.map((candidate) => (

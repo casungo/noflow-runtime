@@ -12,6 +12,10 @@ export type RuntimeOptions<Surface extends string = string, World extends WorldS
   initialSurface: Surface
   historyLimit?: number
   reduceWorld?: (world: World, decision: PolicyDecision<Surface>) => World
+  confidenceThreshold?: number
+  confirmationThreshold?: number
+  fallbackSurface?: Surface
+  confirm?: (event: SemanticEvent<Surface, World>, decision: PolicyDecision<Surface>) => boolean | Promise<boolean>
 }
 
 export type RuntimeSnapshot<Surface extends string = string, World extends WorldState = WorldState> = {
@@ -38,6 +42,9 @@ export class SemanticRuntime<Surface extends string = string, World extends Worl
     initialWorld: World,
     options: RuntimeOptions<Surface, World>,
   ) {
+    if (options.fallbackSurface !== undefined && !options.affordances.includes(options.fallbackSurface)) {
+      throw new Error(`Fallback surface is not a registered affordance: ${options.fallbackSurface}`)
+    }
     this.initialWorld = initialWorld
     this.options = options
     this.historyLimit = Math.max(0, Math.floor(options.historyLimit ?? 50))
@@ -93,12 +100,72 @@ export class SemanticRuntime<Surface extends string = string, World extends Worl
     this.emit({ ...this.snapshot, pending: true })
 
     try {
-      const decision = await this.policy.decide(event)
+      let decision: PolicyDecision<Surface>
+      let usedErrorFallback = false
+      try {
+        decision = await this.policy.decide(event)
+      } catch (error) {
+        if (this.options.fallbackSurface === undefined) throw error
+        usedErrorFallback = true
+        decision = {
+          action: {
+            type: 'present',
+            component: this.options.fallbackSurface,
+            reason: 'The semantic policy was unavailable, so the runtime used its registered fallback.',
+          },
+          confidence: 0,
+          candidates: [],
+          rationale: error instanceof Error ? error.message : 'The semantic policy was unavailable.',
+          model: 'deterministic-fallback',
+          latencyMs: 0,
+          safety: { ambiguity: 1, requiresConfirmation: 0 },
+          resolution: 'error-fallback',
+        }
+      }
+
       if (
         decision.action.type === 'present' &&
         !this.options.affordances.includes(decision.action.component)
       ) {
         throw new Error(`Semantic policy returned an unregistered affordance: ${decision.action.component}`)
+      }
+
+      if (
+        !usedErrorFallback &&
+        this.options.confidenceThreshold !== undefined &&
+        decision.confidence < this.options.confidenceThreshold
+      ) {
+        const fallbackAction: PolicyDecision<Surface>['action'] = this.options.fallbackSurface
+          ? {
+              type: 'present',
+              component: this.options.fallbackSurface,
+              reason: 'Confidence was below the runtime threshold.',
+            }
+          : { type: 'noop', reason: 'Confidence was below the runtime threshold.' }
+        decision = {
+          ...decision,
+          action: fallbackAction,
+          policyAction: decision.action,
+          resolution: 'confidence-fallback',
+        }
+      } else if (
+        !usedErrorFallback &&
+        decision.action.type === 'present' &&
+        (decision.safety?.requiresConfirmation ?? 0) >= (this.options.confirmationThreshold ?? 1)
+      ) {
+        const accepted = (await this.options.confirm?.(event, decision)) ?? false
+        if (accepted) {
+          decision = { ...decision, resolution: 'confirmed' }
+        } else {
+          decision = {
+            ...decision,
+            action: { type: 'noop', reason: 'The user declined confirmation for this action.' },
+            policyAction: decision.action,
+            resolution: 'confirmation-declined',
+          }
+        }
+      } else if (!decision.resolution) {
+        decision = { ...decision, resolution: 'policy' }
       }
 
       const nextSurface = decision.action.type === 'present' ? decision.action.component : this.snapshot.surface

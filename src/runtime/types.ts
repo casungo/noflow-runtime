@@ -42,13 +42,28 @@ export type Candidate<Surface extends string = string> = {
   probability: number
 }
 
+export type DecisionSafety = {
+  ambiguity: number
+  requiresConfirmation: number
+}
+
+export type DecisionResolution =
+  | 'policy'
+  | 'confirmed'
+  | 'confirmation-declined'
+  | 'confidence-fallback'
+  | 'error-fallback'
+
 export type PolicyDecision<Surface extends string = string> = {
   action: UIAction<Surface>
+  policyAction?: UIAction<Surface>
   confidence: number
   candidates: Candidate<Surface>[]
   rationale: string
   model: string
   latencyMs: number
+  safety?: DecisionSafety
+  resolution?: DecisionResolution
 }
 
 export type SemanticPolicy<Surface extends string = string, World extends WorldState = WorldState> = {

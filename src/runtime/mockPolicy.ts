@@ -121,6 +121,11 @@ export class MockSemanticPolicy<World extends MockWorldState = MockWorldState>
         'This local policy is only a runnable stand-in. Replace it with Jev and keep the exact same event/action contract.',
       model: 'local-semantic-mock',
       latencyMs,
+      safety: {
+        ambiguity: clamp(1 - best.probability),
+        requiresConfirmation: best.component === 'checkout' ? 0.8 : 0.02,
+      },
+      resolution: 'policy',
     }
   }
 }

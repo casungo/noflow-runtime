@@ -112,6 +112,10 @@ main { max-width: 1480px; margin: 0 auto; padding: 0 30px; }
 
 .inspector-panel { display: flex; flex-direction: column; }
 .inspector-block, .world-controls, .decision-card { padding: 18px 20px; border-bottom: 1px solid var(--line); }
+.debug-block { padding: 16px 20px; border-bottom: 1px solid var(--line); background: rgba(200,255,61,.025); }
+.debug-status { margin-top: 12px; padding-top: 8px; border-top: 1px solid #20262b; }
+.debug-row { min-height: 28px; display: flex; justify-content: space-between; align-items: center; gap: 14px; color: #74808a; font: 9px var(--mono); }
+.debug-row strong { color: #c0ca8d; font-weight: 400; text-align: right; }
 .inspector-label { display: flex; justify-content: space-between; color: #6c7680; font: 9px var(--mono); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 11px; }
 .inspector-label span:last-child { color: #48515a; }
 pre { margin: 0; white-space: pre-wrap; word-break: break-word; }

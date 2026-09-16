@@ -104,6 +104,11 @@ export class JevSemanticPolicy<
       rationale: `ambiguity=${ambiguity.toFixed(3)} · confirmation=${confirmation.toFixed(3)}`,
       model: payload.model ?? this.model,
       latencyMs: Math.round(performance.now() - started),
+      safety: {
+        ambiguity,
+        requiresConfirmation: confirmation,
+      },
+      resolution: 'policy',
     }
   }
 }

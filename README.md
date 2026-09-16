@@ -25,6 +25,10 @@ const runtime = new SemanticRuntime(
   {
     affordances: ['welcome', 'checkout', 'support'],
     initialSurface: 'welcome',
+    confidenceThreshold: 0.65,
+    confirmationThreshold: 0.7,
+    fallbackSurface: 'welcome',
+    confirm: ({ target }) => window.confirm(`Continue with "${target.label}"?`),
   },
 )
 
@@ -55,6 +59,8 @@ import { JevSemanticPolicy } from 'noflow-runtime/server'
 ```
 
 `SemanticRuntime` only accepts a `present` action whose component belongs to the registered affordance list. A policy cannot render arbitrary components or execute arbitrary JavaScript.
+
+The runtime can enforce safety gates after the policy responds. A decision below `confidenceThreshold` uses `fallbackSurface` when configured. A decision whose `safety.requiresConfirmation` reaches `confirmationThreshold` calls `confirm`; if it returns false, the runtime applies `noop` and keeps the proposed action in `policyAction` for inspection. If the policy throws, the runtime uses the registered fallback and marks the decision as `error-fallback`.
 
 ## Connect Jev
 
