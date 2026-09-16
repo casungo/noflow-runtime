@@ -1,6 +1,6 @@
 {
   "name": "noflow-runtime",
-  "description": "A semantic interaction runtime for React",
+  "description": "A semantic UI runtime for buttons that describe intent instead of routes",
   "private": false,
   "version": "0.1.1",
   "repository": {

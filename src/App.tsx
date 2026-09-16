@@ -112,38 +112,38 @@ export default function App() {
           <div className="brand__mark">N</div>
           <div>
             <strong>NoFlow</strong>
-            <span>semantic runtime</span>
+            <span>buttons with opinions</span>
           </div>
         </div>
         <div className="header-line">
           <span className="status-dot" />
           {import.meta.env.VITE_POLICY_MODE === 'jev' ? 'jev policy online' : 'local policy online'}
         </div>
-        <a className="github-pill" href="https://github.com" target="_blank" rel="noreferrer">
-          v0.1 concept
+        <a className="github-pill" href="https://github.com/casungo/noflow-runtime" target="_blank" rel="noreferrer">
+          GitHub / 0.1
         </a>
       </header>
 
       <main>
         <section className="hero">
           <div className="hero__copy">
-            <span className="kicker">INTERFACES WITHOUT FLOWCHARTS</span>
+            <span className="kicker">BUTTONS WITH OPINIONS</span>
             <h1>
-              Buttons don’t have handlers.
+              Tired of knowing exactly what your button does?
               <br />
-              <em>They have meaning.</em>
+              <em>Let it have a little say.</em>
             </h1>
             <p>
-              Every interaction becomes a semantic event. A fast policy chooses the next UI mutation from
-              the affordances your app exposes.
+              NoFlow turns a click into meaning, asks a policy to pick from the things your app actually knows
+              how to show, and then tries not to embarrass itself. Maybe someone builds something crazy with it.
             </p>
           </div>
           <div className="hero__formula" aria-label="NoFlow formula">
-            <span>event</span>
+            <span>click</span>
             <i>→</i>
-            <span>meaning</span>
+            <span>vibes</span>
             <i>→</i>
-            <span>policy</span>
+            <span>guardrails</span>
             <i>→</i>
             <span>UI</span>
           </div>
@@ -154,7 +154,7 @@ export default function App() {
             <div className="panel__header">
               <div>
                 <span className="panel__index">01</span>
-                <h2>Prototype canvas</h2>
+                <h2>Tiny chaos lab</h2>
               </div>
               <button className="text-button" onClick={() => runtime.reset()}>
                 reset
@@ -163,11 +163,11 @@ export default function App() {
 
             <div className="editor-grid">
               <label className="field field--wide">
-                <span>Change only the button copy</span>
+                <span>Change the words. See what it thinks.</span>
                 <input value={label} onChange={(event) => setLabel(event.target.value)} />
               </label>
               <label className="field">
-                <span>Semantic position</span>
+                <span>How important is it?</span>
                 <select value={position} onChange={(event) => setPosition(event.target.value as typeof position)}>
                   <option value="primary">primary</option>
                   <option value="secondary">secondary</option>
@@ -202,7 +202,7 @@ export default function App() {
                 <div className={`cta-stage cta-stage--${position}`} data-semantic-context>
                   <div className="cta-copy">
                     <span>€{snapshot.world.product.price}/month · cancel anytime</span>
-                    <small>No handler is attached to this CTA.</small>
+                    <small>No handler. The button is free-range.</small>
                   </div>
                   <SemanticButton
                     id="hero-cta"
@@ -219,7 +219,7 @@ export default function App() {
               {snapshot.pending && (
                 <div className="thinking-overlay">
                   <div className="pulse-ring" />
-                  <span>resolving meaning…</span>
+                  <span>asking the button what it meant...</span>
                 </div>
               )}
             </div>
@@ -229,18 +229,18 @@ export default function App() {
             <div className="panel__header">
               <div>
                 <span className="panel__index">02</span>
-                <h2>Decision inspector</h2>
+                <h2>What did it think?</h2>
               </div>
               <span className="live-badge">LIVE</span>
             </div>
 
             <div className="inspector-block">
-              <div className="inspector-label"><span>semantic target</span><span>input</span></div>
+              <div className="inspector-label"><span>button evidence</span><span>input</span></div>
               <pre>{formatJson(targetPreview)}</pre>
             </div>
 
             <div className="world-controls">
-              <div className="inspector-label"><span>world state</span><span>editable</span></div>
+              <div className="inspector-label"><span>world state, allegedly</span><span>editable</span></div>
               <Toggle
                 label="logged in"
                 checked={snapshot.world.user.loggedIn}
@@ -264,14 +264,14 @@ export default function App() {
             </div>
 
             <div className="debug-block">
-              <div className="inspector-label"><span>runtime gates</span><span>debug</span></div>
+              <div className="inspector-label"><span>guardrails for the vibes</span><span>debug</span></div>
               <div className="debug-row"><span>confidence minimum</span><strong>{confidenceThreshold * 100}%</strong></div>
               <div className="debug-row"><span>confirmation minimum</span><strong>{confirmationThreshold * 100}%</strong></div>
               <div className="debug-row"><span>fallback surface</span><strong>{fallbackSurface}</strong></div>
             </div>
 
             <div className="decision-card">
-              <div className="inspector-label"><span>last decision</span><span>output</span></div>
+              <div className="inspector-label"><span>latest guess</span><span>output</span></div>
               {snapshot.lastDecision ? (
                 <>
                   <div className="decision-main">
@@ -326,7 +326,7 @@ export default function App() {
                   </div>
                 </>
               ) : (
-                <div className="empty-state">Click the CTA. The runtime will choose a transition.</div>
+                <div className="empty-state">Click it. See what it thinks. It can only choose registered stuff.</div>
               )}
             </div>
           </aside>
@@ -335,33 +335,33 @@ export default function App() {
         <section className="principles">
           <article>
             <span>01</span>
-            <h3>No flow graph</h3>
-            <p>You register what the app can do, not every path a user can take.</p>
+            <h3>Fewer arrows</h3>
+            <p>Register what the app can do. Stop drawing every possible route.</p>
           </article>
           <article>
             <span>02</span>
-            <h3>Meaning is the API</h3>
-            <p>Copy, surrounding content, position and world-state form the interaction contract.</p>
+            <h3>Words do some work</h3>
+            <p>Copy, context, position, and world state give the button something to go on.</p>
           </article>
           <article>
             <span>03</span>
-            <h3>Fast policy loop</h3>
-            <p>Swap the mock policy for Jev behind one endpoint and preserve the frontend runtime.</p>
+            <h3>Fast enough to be weird</h3>
+            <p>Swap the local guess for Jev behind one endpoint. Keep the same runtime.</p>
           </article>
         </section>
 
         <section className="code-strip">
           <div>
-            <span className="kicker">THE WHOLE IDEA</span>
-            <h2>Change the sentence.<br />Change the product behavior.</h2>
+            <span className="kicker">THE ENTIRE BET</span>
+            <h2>Change the words.<br />Watch the UI pick a side.</h2>
           </div>
-          <pre><code>{`<SemanticButton id="hero-cta">\n  {label}\n</SemanticButton>\n\n// no onClick={() => goTo('/checkout')}`}</code></pre>
+          <pre><code>{`<SemanticButton id="hero-cta">\n  {label}\n</SemanticButton>\n\n// no onClick. trust the affordances.`}</code></pre>
         </section>
       </main>
 
       <footer>
         <strong>NoFlow / runtime</strong>
-        <span>Built to make “idea → prototype” feel instantaneous.</span>
+        <span>For ideas that are brilliant, cursed, or both.</span>
       </footer>
     </div>
   )

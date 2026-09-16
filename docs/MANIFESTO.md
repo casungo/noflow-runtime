@@ -1,74 +1,55 @@
-# NoFlow Manifesto
+# NoFlow manifesto
 
-## The old unit of product design is the flow
+## Buttons are tiny liars
 
-A designer draws boxes and arrows. An engineer turns arrows into handlers. Product behavior becomes a graph that must be edited every time the meaning changes.
+A button says `Buy Pro`. Somewhere underneath, an engineer has wired it to an arrow, a route, a modal, three conditions, and a comment that says "temporary" from 2022.
 
-That made sense when software could only execute exact instructions.
+NoFlow asks a less tidy question: what if the button reported what it means and the app picked the next safe thing from there?
 
-## The new unit can be the affordance
+This is a funny idea. It may also be useful.
 
-A NoFlow application declares:
+## The arrow is not the product
 
-- what exists,
-- what is safe to do,
-- what the world currently looks like,
-- what the user just expressed.
+Most UI code starts with a flow:
 
-It does **not** need to declare every route between those things.
+```text
+click -> /checkout
+```
 
-A policy resolves the route at interaction time.
+That is fine when the meaning never changes. Product ideas do change, usually five minutes after the flowchart is approved.
 
-## Copy becomes executable product intent
+A NoFlow app declares what exists, what is allowed, what the world looks like, and what the user just expressed. It does not have to draw every possible arrow between those facts.
 
-This is the provocative bet:
+## Words get a vote
 
-> If a button changes from “Buy Pro” to “Compare plans”, the prototype should not require an engineer to reconnect the arrow.
+Change `Buy Pro` to `Compare plans`. The prototype should not need an engineer to reconnect the arrow by hand.
 
-The sentence itself is a strong signal about intended behavior. Position, surrounding content, user state, and product state add more signal.
+The label is one signal. Nearby DOM text, position, user state, product state, and previous decisions add more. The runtime sends those signals to a policy, then checks the answer against the affordances the app actually registered.
 
-The runtime's job is to translate those signals into a constrained action.
+The policy can guess. It cannot invent a component or execute a surprise script.
 
-## Not arbitrary code generation
+## This is not code generation with a fake moustache
 
-NoFlow is not “let the model write JavaScript on every click.”
+NoFlow does not ask a model to write JavaScript on every click. That would be slow, hard to debug, and a spectacular way to turn a button into a security incident.
 
-That would destroy latency, predictability, security, and debuggability.
-
-The host application owns the action vocabulary. The model gets freedom **inside a typed boundary**.
-
-Think:
+The host app owns the allowed actions:
 
 ```text
 semantic event
     ↓
-fast probabilistic policy
+policy guess
     ↓
-known safe operation
+known safe affordance
 ```
 
-not:
+The runtime also has a fallback for low confidence and policy outages. Even experimental UI needs a seatbelt.
+
+## The bet
 
 ```text
-semantic event
-    ↓
-LLM-generated program
-    ↓
-pray
+idea -> wording -> behavior -> prototype
 ```
 
-## Why now
+Maybe this makes early product work faster. Maybe it produces interfaces that are slightly unhinged. Both outcomes are more interesting than another flowchart nobody wants to update.
 
-This architecture is only compelling when semantic inference is cheap enough to sit in the normal interaction loop. A multi-second agent cannot replace a reducer. A ~100 ms decision engine starts to make the idea plausible.
-
-## The product thesis
-
-NoFlow could collapse the distance between:
-
-```text
-idea → wording → behavior → prototype
-```
-
-The designer changes meaning. The prototype changes behavior immediately.
-
-If this works, “wiring the flow” becomes less central to early product development. Product exploration can happen directly in the artifact instead of in a diagram that must later be reimplemented.
+NoFlow is an installable runtime and an open invitation to try the weird version of the idea. Build something sensible with it. Build something completely crazy. Then tell us whether the button knew what it was doing.

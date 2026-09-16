@@ -9,43 +9,43 @@ type SurfaceProps = {
 const copy: Record<PrimitiveName, { eyebrow: string; title: string; body: string }> = {
   welcome: {
     eyebrow: 'Semantic surface',
-    title: 'Your product, without the flowchart.',
-    body: 'The interface exposes affordances. The policy decides which one should exist next.',
+    title: 'Your product, without the arrow maze.',
+    body: 'The interface exposes affordances. The policy makes a guess about which one should show up next.',
   },
   checkout: {
     eyebrow: 'Chosen at runtime',
     title: 'Checkout appeared.',
-    body: 'Nothing in the button pointed directly to this screen. Its meaning plus world-state selected it.',
+    body: 'The button did not point here. Its meaning plus the world state got the vote.',
   },
   comparison: {
     eyebrow: 'Chosen at runtime',
     title: 'A comparison is more useful now.',
-    body: 'The same physical button can become a different transition when its copy changes.',
+    body: 'The same button can become a different transition when its copy changes. Slightly cursed, quite handy.',
   },
   trial: {
     eyebrow: 'Chosen at runtime',
     title: 'Start a free trial.',
-    body: 'The runtime inferred exploration intent and surfaced the trial affordance.',
+    body: 'The runtime guessed that exploration was the mood and showed the trial affordance.',
   },
   support: {
     eyebrow: 'Chosen at runtime',
     title: 'Human help, immediately.',
-    body: 'Intent routing is part of the interaction loop rather than a separate chatbot flow.',
+    body: 'Help is part of the interaction loop, not a chatbot maze bolted on later.',
   },
   login: {
     eyebrow: 'Chosen at runtime',
     title: 'Sign in before continuing.',
-    body: 'World-state can override the most literal interpretation of a click.',
+    body: 'World state can overrule the most obvious interpretation of a click.',
   },
   dashboard: {
     eyebrow: 'Chosen at runtime',
     title: 'Welcome back to your workspace.',
-    body: 'A vague “Continue” can resolve differently for a returning authenticated user.',
+    body: 'A vague "Continue" can mean something different when the user is already logged in.',
   },
   details: {
     eyebrow: 'Chosen at runtime',
     title: 'Show more context, not another funnel step.',
-    body: 'When intent is exploratory, the UI can explain instead of forcing navigation.',
+    body: 'When the intent is fuzzy, the UI can explain instead of forcing another route.',
   },
 }
 
