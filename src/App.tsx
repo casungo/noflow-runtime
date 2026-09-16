@@ -3,6 +3,7 @@ import { SemanticButton } from './components/SemanticButton'
 import { Surface } from './components/Surface'
 import { SemanticRuntime } from './runtime/createSemanticRuntime'
 import { MockSemanticPolicy } from './runtime/mockPolicy'
+import { HttpSemanticPolicy } from './runtime/httpPolicy'
 import type { WorldState } from './runtime/types'
 import { useSemanticRuntime } from './runtime/useSemanticRuntime'
 
@@ -37,7 +38,14 @@ function formatJson(value: unknown) {
 }
 
 export default function App() {
-  const runtime = useMemo(() => new SemanticRuntime(new MockSemanticPolicy(), initialWorld), [])
+  const runtime = useMemo(() => {
+    const policy =
+      import.meta.env.VITE_POLICY_MODE === 'jev'
+        ? new HttpSemanticPolicy(import.meta.env.VITE_SEMANTIC_POLICY_URL ?? '/api/semantic-transition')
+        : new MockSemanticPolicy()
+
+    return new SemanticRuntime(policy, initialWorld)
+  }, [])
   const snapshot = useSemanticRuntime(runtime)
   const [label, setLabel] = useState('Buy Pro')
   const [position, setPosition] = useState<'primary' | 'secondary' | 'footer'>('primary')
@@ -72,7 +80,7 @@ export default function App() {
         </div>
         <div className="header-line">
           <span className="status-dot" />
-          local policy online
+          {import.meta.env.VITE_POLICY_MODE === 'jev' ? 'jev policy online' : 'local policy online'}
         </div>
         <a className="github-pill" href="https://github.com" target="_blank" rel="noreferrer">
           v0.1 concept

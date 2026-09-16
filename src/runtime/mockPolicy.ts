@@ -60,6 +60,19 @@ function makeCandidates(event: SemanticEvent): Candidate[] {
     scores.set('checkout', 0.97)
   }
 
+  // Position is meaning too. Primary affordances lean toward commitment;
+  // secondary/footer affordances lean toward exploration and support.
+  if (event.target.position === 'primary') {
+    scores.set('checkout', clamp((scores.get('checkout') ?? 0) + 0.035))
+    scores.set('trial', clamp((scores.get('trial') ?? 0) + 0.025))
+  } else if (event.target.position === 'secondary') {
+    scores.set('comparison', clamp((scores.get('comparison') ?? 0) + 0.04))
+    scores.set('details', clamp((scores.get('details') ?? 0) + 0.04))
+  } else if (event.target.position === 'footer') {
+    scores.set('support', clamp((scores.get('support') ?? 0) + 0.04))
+    scores.set('details', clamp((scores.get('details') ?? 0) + 0.03))
+  }
+
   const ranked = [...scores.entries()]
     .map(([component, probability]) => ({ component, probability }))
     .sort((a, b) => b.probability - a.probability)

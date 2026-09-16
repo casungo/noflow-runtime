@@ -66,7 +66,7 @@ npm run dev
 
 Then open the local Vite URL.
 
-The included policy is a local mock with an artificial ~70–125 ms delay so the concept works without credentials.
+The included policy is a local mock with an artificial ~70–125 ms delay so the concept works without credentials. A real Jev adapter is also wired into the Vite dev server.
 
 ## Project structure
 
@@ -101,47 +101,26 @@ The policy chooses among them. This is closer to an operating system syscall bou
 
 ## Plugging in Jev
 
-Keep model credentials off the browser. Replace `MockSemanticPolicy` with `HttpSemanticPolicy`:
+The repo already contains a real server-side Jev adapter in `vite.config.ts`, based on TypeSafe's HTTP API. Credentials never enter the browser.
 
-```ts
-const runtime = new SemanticRuntime(
-  new HttpSemanticPolicy('/api/semantic-transition'),
-  initialWorld,
-)
+Create `.env.local`:
+
+```bash
+VITE_POLICY_MODE=jev
+TYPESAFE_API_KEY=your_key_here
 ```
 
-Your server endpoint receives the `SemanticEvent` and asks Jev for typed probabilistic outputs. One useful shape is to score each registered affordance independently, then select the highest score above your confidence threshold.
+Then run `npm run dev`. The browser still talks only to `/api/semantic-transition`. The Vite server turns the semantic event into one `Choice` plus two independent `Noul` questions (`ambiguous_intent` and `requires_confirmation`) in the same Jev request.
 
-Pseudo-server logic:
+The important boundary remains provider-agnostic:
 
 ```ts
-const event = await request.json()
-
-const scores = await jev.evaluate({
-  state: event,
-  questions: event.affordances.map((name) => ({
-    id: name,
-    question: `Should the UI present the ${name} affordance next?`,
-    output: 'score',
-  })),
-})
-
-const best = maxBy(scores, 'score')
-
-return {
-  action: {
-    type: 'present',
-    component: best.id,
-    reason: 'Highest semantic fit for this event and world-state.'
-  },
-  confidence: best.score,
-  candidates: topK(scores, 4),
-  model: 'jev',
-  latencyMs
+interface SemanticPolicy {
+  decide(event: SemanticEvent): Promise<PolicyDecision>
 }
 ```
 
-Adapt the exact server call to the current Jev SDK/API. The frontend contract is deliberately provider-agnostic.
+TypeSafe's current API accepts structured objects as `state`, uses `jev-latest`, and evaluates mixed typed questions in parallel. See: https://docs.typesafe.ai/introduction/quickstart and https://docs.typesafe.ai/api
 
 ## What makes this different from generative UI
 
