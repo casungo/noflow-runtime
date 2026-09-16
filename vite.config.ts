@@ -141,6 +141,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), semanticPolicyApi(env.TYPESAFE_API_KEY)],
     server: {
       port: 5173,
+      allowedHosts: true,
     },
   }
 })
