@@ -13,7 +13,8 @@ React 18.2 or newer is required. NoFlow does not add a router, state manager, or
 ## Use it in a new app
 
 ```tsx
-import { SemanticButton, SemanticRuntime, HttpSemanticPolicy, useSemanticRuntime } from 'noflow-runtime'
+import { SemanticRuntime, HttpSemanticPolicy } from 'noflow-runtime/core'
+import { SemanticButton, useSemanticRuntime } from 'noflow-runtime/react'
 
 type Surface = 'welcome' | 'checkout' | 'support'
 type World = Record<string, unknown> & { loggedIn: boolean }
@@ -45,6 +46,14 @@ The button has no domain-specific `onClick`. Its label, visible DOM context, pos
 
 `SemanticButton` extracts a bounded summary from its nearest semantic container, section, article, form, or main element. Add `data-semantic-context` to a container to choose the extraction boundary. The optional `nearbyText` prop remains available for context that only the application knows.
 
+The root import remains available for compatibility, but subpath imports keep framework-specific code out of consumers that only need the core:
+
+```ts
+import { SemanticRuntime } from 'noflow-runtime/core'
+import { SemanticButton } from 'noflow-runtime/react'
+import { JevSemanticPolicy } from 'noflow-runtime/server'
+```
+
 `SemanticRuntime` only accepts a `present` action whose component belongs to the registered affordance list. A policy cannot render arbitrary components or execute arbitrary JavaScript.
 
 ## Connect Jev
@@ -52,7 +61,7 @@ The button has no domain-specific `onClick`. Its label, visible DOM context, pos
 Keep the Jev key on the server. The package includes a server-side policy and a standard Web Request handler, so it works in a Node, edge, or framework route without a Vite plugin.
 
 ```ts
-import { createSemanticPolicyHandler, JevSemanticPolicy } from 'noflow-runtime'
+import { createSemanticPolicyHandler, JevSemanticPolicy } from 'noflow-runtime/server'
 
 const policy = new JevSemanticPolicy({
   apiKey: process.env.TYPESAFE_API_KEY!,

@@ -1,4 +1,8 @@
-import { SemanticRuntime } from '../dist/index.js'
+import { readFile } from 'node:fs/promises'
+import { SemanticRuntime } from '../dist/core.js'
+
+const coreSource = await readFile(new URL('../dist/core.js', import.meta.url), 'utf8')
+if (coreSource.includes('from "react"')) throw new Error('core entrypoint must not import React')
 
 const policy = {
   async decide(event) {

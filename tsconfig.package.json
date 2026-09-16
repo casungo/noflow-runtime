@@ -16,5 +16,5 @@
     "outDir": "dist/types",
     "rootDir": "src"
   },
-  "include": ["src/index.ts"]
+  "include": ["src/index.ts", "src/core.ts", "src/react.ts", "src/server.ts"]
 }
