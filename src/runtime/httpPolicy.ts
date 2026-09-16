@@ -1,4 +1,4 @@
-import type { PolicyDecision, SemanticEvent, SemanticPolicy } from './types'
+import type { PolicyDecision, PrimitiveName, SemanticEvent, SemanticPolicy, WorldState } from './types'
 
 /**
  * Production adapter.
@@ -7,10 +7,13 @@ import type { PolicyDecision, SemanticEvent, SemanticPolicy } from './types'
  * returns a PolicyDecision. The browser never needs to know whether the policy
  * behind that endpoint is Jev, another classifier, or a deterministic service.
  */
-export class HttpSemanticPolicy implements SemanticPolicy {
+export class HttpSemanticPolicy<
+  Surface extends string = PrimitiveName,
+  World extends WorldState = WorldState,
+> implements SemanticPolicy<Surface, World> {
   constructor(private readonly endpoint = '/api/semantic-transition') {}
 
-  async decide(event: SemanticEvent): Promise<PolicyDecision> {
+  async decide(event: SemanticEvent<Surface, World>): Promise<PolicyDecision<Surface>> {
     const response = await fetch(this.endpoint, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -21,6 +24,6 @@ export class HttpSemanticPolicy implements SemanticPolicy {
       throw new Error(`Semantic policy failed with ${response.status}`)
     }
 
-    return response.json() as Promise<PolicyDecision>
+    return response.json() as Promise<PolicyDecision<Surface>>
   }
 }

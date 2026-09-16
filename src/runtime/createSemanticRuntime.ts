@@ -1,6 +1,5 @@
 import type {
   PolicyDecision,
-  PrimitiveName,
   SemanticEvent,
   SemanticPolicy,
   SemanticTarget,
@@ -8,37 +7,42 @@ import type {
   WorldState,
 } from './types'
 
-export type RuntimeSnapshot = {
-  surface: PrimitiveName
-  world: WorldState
-  pending: boolean
-  lastDecision: PolicyDecision | null
-  history: TransitionLog[]
+export type RuntimeOptions<Surface extends string = string, World extends WorldState = WorldState> = {
+  affordances: readonly Surface[]
+  initialSurface: Surface
+  historyLimit?: number
+  reduceWorld?: (world: World, decision: PolicyDecision<Surface>) => World
 }
 
-type Listener = (snapshot: RuntimeSnapshot) => void
+export type RuntimeSnapshot<Surface extends string = string, World extends WorldState = WorldState> = {
+  surface: Surface
+  world: World
+  pending: boolean
+  lastDecision: PolicyDecision<Surface> | null
+  history: TransitionLog<Surface, World>[]
+}
 
-const affordances: PrimitiveName[] = [
-  'checkout',
-  'comparison',
-  'trial',
-  'support',
-  'login',
-  'dashboard',
-  'details',
-  'welcome',
-]
+type Listener<Surface extends string, World extends WorldState> = (
+  snapshot: RuntimeSnapshot<Surface, World>,
+) => void
 
-export class SemanticRuntime {
-  private listeners = new Set<Listener>()
-  private snapshot: RuntimeSnapshot
+export class SemanticRuntime<Surface extends string = string, World extends WorldState = WorldState> {
+  private listeners = new Set<Listener<Surface, World>>()
+  private readonly initialWorld: World
+  private readonly options: RuntimeOptions<Surface, World>
+  private readonly historyLimit: number
+  private snapshot: RuntimeSnapshot<Surface, World>
 
   constructor(
-    private readonly policy: SemanticPolicy,
-    initialWorld: WorldState,
+    private readonly policy: SemanticPolicy<Surface, World>,
+    initialWorld: World,
+    options: RuntimeOptions<Surface, World>,
   ) {
+    this.initialWorld = initialWorld
+    this.options = options
+    this.historyLimit = Math.max(0, Math.floor(options.historyLimit ?? 50))
     this.snapshot = {
-      surface: 'welcome',
+      surface: options.initialSurface,
       world: initialWorld,
       pending: false,
       lastDecision: null,
@@ -48,63 +52,58 @@ export class SemanticRuntime {
 
   getSnapshot = () => this.snapshot
 
-  subscribe = (listener: Listener) => {
+  subscribe = (listener: Listener<Surface, World>) => {
     this.listeners.add(listener)
     return () => this.listeners.delete(listener)
   }
 
-  private emit(next: RuntimeSnapshot) {
+  private emit(next: RuntimeSnapshot<Surface, World>) {
     this.snapshot = next
     for (const listener of this.listeners) listener(this.snapshot)
   }
 
-  setWorld(world: WorldState) {
+  setWorld(world: World) {
     this.emit({ ...this.snapshot, world })
   }
 
   reset() {
     this.emit({
-      ...this.snapshot,
-      surface: 'welcome',
+      surface: this.options.initialSurface,
+      world: this.initialWorld,
       pending: false,
       lastDecision: null,
       history: [],
-      world: {
-        ...this.snapshot.world,
-        session: { ...this.snapshot.world.session, lastSurface: 'welcome' },
-      },
     })
   }
 
   async dispatch(
     target: SemanticTarget,
     nearbyText: string,
-  ): Promise<PolicyDecision> {
-    const event: SemanticEvent = {
+  ): Promise<PolicyDecision<Surface>> {
+    const event: SemanticEvent<Surface, World> = {
       id: crypto.randomUUID(),
       type: 'activate',
       at: Date.now(),
       target,
       nearbyText,
       world: this.snapshot.world,
-      affordances,
+      affordances: [...this.options.affordances],
     }
 
     this.emit({ ...this.snapshot, pending: true })
 
     try {
       const decision = await this.policy.decide(event)
-      const nextSurface =
-        decision.action.type === 'present' ? decision.action.component : this.snapshot.surface
-
-      const nextWorld: WorldState = {
-        ...this.snapshot.world,
-        session: {
-          ...this.snapshot.world.session,
-          lastSurface: nextSurface,
-          visits: this.snapshot.world.session.visits + 1,
-        },
+      if (
+        decision.action.type === 'present' &&
+        !this.options.affordances.includes(decision.action.component)
+      ) {
+        throw new Error(`Semantic policy returned an unregistered affordance: ${decision.action.component}`)
       }
+
+      const nextSurface = decision.action.type === 'present' ? decision.action.component : this.snapshot.surface
+
+      const nextWorld = this.options.reduceWorld?.(this.snapshot.world, decision) ?? this.snapshot.world
 
       this.emit({
         ...this.snapshot,
@@ -112,7 +111,7 @@ export class SemanticRuntime {
         world: nextWorld,
         pending: false,
         lastDecision: decision,
-        history: [{ event, decision }, ...this.snapshot.history].slice(0, 8),
+        history: [{ event, decision }, ...this.snapshot.history].slice(0, this.historyLimit),
       })
 
       return decision

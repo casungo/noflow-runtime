@@ -1,10 +1,11 @@
 import type { PropsWithChildren } from 'react'
-import { useRef } from 'react'
 import type { SemanticRuntime } from '../runtime/createSemanticRuntime'
+import type { WorldState } from '../runtime/types'
+import { extractSemanticContext } from '../runtime/domContext'
 
-type SemanticButtonProps = PropsWithChildren<{
+type SemanticButtonProps<Surface extends string, World extends WorldState> = PropsWithChildren<{
   id: string
-  runtime: SemanticRuntime
+  runtime: SemanticRuntime<Surface, World>
   description?: string
   position?: 'primary' | 'secondary' | 'footer'
   className?: string
@@ -15,7 +16,7 @@ type SemanticButtonProps = PropsWithChildren<{
  * Notice what is intentionally missing: no action-specific onClick.
  * The click is only serialized into meaning + context and handed to the runtime.
  */
-export function SemanticButton({
+export function SemanticButton<Surface extends string, World extends WorldState>({
   id,
   runtime,
   children,
@@ -23,18 +24,18 @@ export function SemanticButton({
   position = 'primary',
   className,
   nearbyText = '',
-}: SemanticButtonProps) {
-  const ref = useRef<HTMLButtonElement>(null)
-  const label = typeof children === 'string' ? children : ref.current?.textContent ?? id
-
+}: SemanticButtonProps<Surface, World>) {
   return (
     <button
-      ref={ref}
       type="button"
       className={className}
       data-semantic
-      onClick={() =>
-        runtime.dispatch(
+      onClick={(event) => {
+        const label = typeof children === 'string' ? children : event.currentTarget.textContent?.trim() ?? id
+        const automaticContext = extractSemanticContext(event.currentTarget)
+        const context = [automaticContext, nearbyText].filter(Boolean).join('\n')
+
+        void runtime.dispatch(
           {
             id,
             role: 'button',
@@ -42,9 +43,9 @@ export function SemanticButton({
             description,
             position,
           },
-          nearbyText,
+          context,
         )
-      }
+      }}
     >
       {children}
     </button>

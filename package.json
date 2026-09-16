@@ -1,21 +1,39 @@
 {
-  "name": "noflow-ui",
-  "private": true,
+  "name": "noflow-runtime",
+  "description": "A semantic interaction runtime for React",
+  "private": false,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:package": "rm -rf dist && tsc -p tsconfig.package.json && vite build --config vite.lib.config.ts",
+    "check:package": "npm run build:package && node scripts/check-package.mjs && npm pack --dry-run",
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false"
   },
-  "dependencies": {
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "react-dom": ">=18.2.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",

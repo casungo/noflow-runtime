@@ -4,7 +4,16 @@ import type {
   PrimitiveName,
   SemanticEvent,
   SemanticPolicy,
+  WorldState,
 } from './types'
+
+type MockWorldState = WorldState & {
+  user: {
+    loggedIn: boolean
+    hasPaymentMethod: boolean
+    trialUsed: boolean
+  }
+}
 
 const primitives: PrimitiveName[] = [
   'checkout',
@@ -35,6 +44,7 @@ function clamp(value: number, min = 0, max = 0.99) {
 
 function makeCandidates(event: SemanticEvent): Candidate[] {
   const text = `${event.target.label} ${event.target.description ?? ''} ${event.nearbyText}`
+  const world = event.world as MockWorldState
   const scores = new Map<PrimitiveName, number>(primitives.map((name) => [name, 0.05]))
 
   for (const signal of signals) {
@@ -43,20 +53,20 @@ function makeCandidates(event: SemanticEvent): Candidate[] {
     }
   }
 
-  if (!event.world.user.loggedIn) {
+  if (!world.user.loggedIn) {
     scores.set('login', clamp((scores.get('login') ?? 0) + 0.12))
   }
 
-  if (event.world.user.loggedIn && /continue|next|go/i.test(text)) {
+  if (world.user.loggedIn && /continue|next|go/i.test(text)) {
     scores.set('dashboard', 0.72)
   }
 
-  if (event.world.user.trialUsed && /trial|free|try/i.test(text)) {
+  if (world.user.trialUsed && /trial|free|try/i.test(text)) {
     scores.set('checkout', 0.81)
     scores.set('trial', 0.32)
   }
 
-  if (event.world.user.hasPaymentMethod && /buy|upgrade|purchase|checkout/i.test(text)) {
+  if (world.user.hasPaymentMethod && /buy|upgrade|purchase|checkout/i.test(text)) {
     scores.set('checkout', 0.97)
   }
 
@@ -87,8 +97,10 @@ function makeCandidates(event: SemanticEvent): Candidate[] {
   return ranked
 }
 
-export class MockSemanticPolicy implements SemanticPolicy {
-  async decide(event: SemanticEvent): Promise<PolicyDecision> {
+export class MockSemanticPolicy<World extends MockWorldState = MockWorldState>
+  implements SemanticPolicy<PrimitiveName, World>
+{
+  async decide(event: SemanticEvent<PrimitiveName, World>): Promise<PolicyDecision<PrimitiveName>> {
     const started = performance.now()
     const candidates = makeCandidates(event)
     const delay = 72 + Math.floor(Math.random() * 54)

@@ -1,12 +1,4 @@
-export type PrimitiveName =
-  | 'checkout'
-  | 'comparison'
-  | 'trial'
-  | 'support'
-  | 'login'
-  | 'dashboard'
-  | 'details'
-  | 'welcome'
+export type PrimitiveName = string
 
 export type SemanticTarget = {
   id: string
@@ -16,43 +8,28 @@ export type SemanticTarget = {
   position?: 'primary' | 'secondary' | 'footer'
 }
 
-export type WorldState = {
-  user: {
-    loggedIn: boolean
-    hasPaymentMethod: boolean
-    trialUsed: boolean
-  }
-  product: {
-    name: string
-    price: number
-    plan: 'starter' | 'pro' | 'team'
-  }
-  session: {
-    visits: number
-    lastSurface: PrimitiveName
-  }
-}
+export type WorldState = Record<string, unknown>
 
-export type SemanticEvent = {
+export type SemanticEvent<Surface extends string = string, World extends WorldState = WorldState> = {
   id: string
   type: 'activate' | 'submit' | 'change'
   at: number
   target: SemanticTarget
   nearbyText: string
-  world: WorldState
-  affordances: PrimitiveName[]
+  world: World
+  affordances: Surface[]
 }
 
-export type UIAction =
+export type UIAction<Surface extends string = string> =
   | {
       type: 'present'
-      component: PrimitiveName
+      component: Surface
       reason: string
     }
   | {
       type: 'update-world'
-      path: 'user.loggedIn' | 'user.hasPaymentMethod' | 'user.trialUsed'
-      value: boolean
+      path: string
+      value: unknown
       reason: string
     }
   | {
@@ -60,25 +37,25 @@ export type UIAction =
       reason: string
     }
 
-export type Candidate = {
-  component: PrimitiveName
+export type Candidate<Surface extends string = string> = {
+  component: Surface
   probability: number
 }
 
-export type PolicyDecision = {
-  action: UIAction
+export type PolicyDecision<Surface extends string = string> = {
+  action: UIAction<Surface>
   confidence: number
-  candidates: Candidate[]
+  candidates: Candidate<Surface>[]
   rationale: string
   model: string
   latencyMs: number
 }
 
-export type SemanticPolicy = {
-  decide(event: SemanticEvent): Promise<PolicyDecision>
+export type SemanticPolicy<Surface extends string = string, World extends WorldState = WorldState> = {
+  decide(event: SemanticEvent<Surface, World>): Promise<PolicyDecision<Surface>>
 }
 
-export type TransitionLog = {
-  event: SemanticEvent
-  decision: PolicyDecision
+export type TransitionLog<Surface extends string = string, World extends WorldState = WorldState> = {
+  event: SemanticEvent<Surface, World>
+  decision: PolicyDecision<Surface>
 }

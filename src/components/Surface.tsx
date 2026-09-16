@@ -1,8 +1,9 @@
-import type { PrimitiveName, WorldState } from '../runtime/types'
+import type { PrimitiveName } from '../runtime/types'
+import type { DemoWorldState } from '../demoTypes'
 
 type SurfaceProps = {
   name: PrimitiveName
-  world: WorldState
+  world: DemoWorldState
 }
 
 const copy: Record<PrimitiveName, { eyebrow: string; title: string; body: string }> = {
@@ -49,7 +50,7 @@ const copy: Record<PrimitiveName, { eyebrow: string; title: string; body: string
 }
 
 export function Surface({ name, world }: SurfaceProps) {
-  const content = copy[name]
+  const content = copy[name] ?? copy.welcome
 
   return (
     <section className={`surface surface--${name}`} data-surface={name}>

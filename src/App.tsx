@@ -4,10 +4,11 @@ import { Surface } from './components/Surface'
 import { SemanticRuntime } from './runtime/createSemanticRuntime'
 import { MockSemanticPolicy } from './runtime/mockPolicy'
 import { HttpSemanticPolicy } from './runtime/httpPolicy'
-import type { WorldState } from './runtime/types'
+import type { PrimitiveName } from './runtime/types'
 import { useSemanticRuntime } from './runtime/useSemanticRuntime'
+import type { DemoWorldState } from './demoTypes'
 
-const initialWorld: WorldState = {
+const initialWorld: DemoWorldState = {
   user: {
     loggedIn: true,
     hasPaymentMethod: false,
@@ -41,16 +42,29 @@ export default function App() {
   const runtime = useMemo(() => {
     const policy =
       import.meta.env.VITE_POLICY_MODE === 'jev'
-        ? new HttpSemanticPolicy(import.meta.env.VITE_SEMANTIC_POLICY_URL ?? '/api/semantic-transition')
-        : new MockSemanticPolicy()
+        ? new HttpSemanticPolicy<PrimitiveName, DemoWorldState>(
+            import.meta.env.VITE_SEMANTIC_POLICY_URL ?? '/api/semantic-transition',
+          )
+        : new MockSemanticPolicy<DemoWorldState>()
 
-    return new SemanticRuntime(policy, initialWorld)
+    return new SemanticRuntime<PrimitiveName, DemoWorldState>(policy, initialWorld, {
+      affordances: ['checkout', 'comparison', 'trial', 'support', 'login', 'dashboard', 'details', 'welcome'],
+      initialSurface: 'welcome',
+      reduceWorld: (world, decision) => ({
+        ...world,
+        session: {
+          ...world.session,
+          lastSurface: decision.action.type === 'present' ? decision.action.component : world.session.lastSurface,
+          visits: world.session.visits + 1,
+        },
+      }),
+    })
   }, [])
   const snapshot = useSemanticRuntime(runtime)
   const [label, setLabel] = useState('Buy Pro')
   const [position, setPosition] = useState<'primary' | 'secondary' | 'footer'>('primary')
 
-  const updateUser = (key: keyof WorldState['user'], value: boolean) => {
+  const updateUser = (key: keyof DemoWorldState['user'], value: boolean) => {
     runtime.setWorld({
       ...snapshot.world,
       user: {
@@ -162,7 +176,7 @@ export default function App() {
 
                 <Surface name={snapshot.surface} world={snapshot.world} />
 
-                <div className={`cta-stage cta-stage--${position}`}>
+                <div className={`cta-stage cta-stage--${position}`} data-semantic-context>
                   <div className="cta-copy">
                     <span>€{snapshot.world.product.price}/month · cancel anytime</span>
                     <small>No handler is attached to this CTA.</small>
@@ -172,7 +186,6 @@ export default function App() {
                     runtime={runtime}
                     description="Primary product CTA. No destination or action is encoded here."
                     position={position}
-                    nearbyText={`Product ${snapshot.world.product.name}, plan ${snapshot.world.product.plan}, €${snapshot.world.product.price} monthly.`}
                     className="semantic-cta"
                   >
                     {label}
