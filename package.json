@@ -2,7 +2,7 @@
   "name": "noflow-runtime",
   "description": "A semantic UI runtime for buttons that describe intent instead of routes",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/casungo/noflow-runtime.git"
