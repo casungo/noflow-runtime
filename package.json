@@ -1,15 +1,15 @@
 {
-  "name": "reflow-runtime",
+  "name": "noflow-runtime",
   "description": "A semantic interaction runtime for React",
   "private": false,
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/casungo/reflow-runtime.git"
+    "url": "https://github.com/casungo/noflow-runtime.git"
   },
-  "homepage": "https://github.com/casungo/reflow-runtime#readme",
+  "homepage": "https://github.com/casungo/noflow-runtime#readme",
   "bugs": {
-    "url": "https://github.com/casungo/reflow-runtime/issues"
+    "url": "https://github.com/casungo/noflow-runtime/issues"
   },
   "type": "module",
   "scripts": {

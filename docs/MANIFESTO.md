@@ -1,4 +1,4 @@
-# Reflow Manifesto
+# NoFlow Manifesto
 
 ## The old unit of product design is the flow
 
@@ -8,7 +8,7 @@ That made sense when software could only execute exact instructions.
 
 ## The new unit can be the affordance
 
-A Reflow application declares:
+A NoFlow application declares:
 
 - what exists,
 - what is safe to do,
@@ -31,7 +31,7 @@ The runtime's job is to translate those signals into a constrained action.
 
 ## Not arbitrary code generation
 
-Reflow is not “let the model write JavaScript on every click.”
+NoFlow is not “let the model write JavaScript on every click.”
 
 That would destroy latency, predictability, security, and debuggability.
 
@@ -63,7 +63,7 @@ This architecture is only compelling when semantic inference is cheap enough to 
 
 ## The product thesis
 
-Reflow could collapse the distance between:
+NoFlow could collapse the distance between:
 
 ```text
 idea → wording → behavior → prototype

@@ -1,19 +1,19 @@
-# Reflow
+# NoFlow
 
-Reflow is a semantic interaction runtime for React. Components emit meaning, a policy selects one registered affordance, and the runtime applies the typed transition.
+NoFlow is a semantic interaction runtime for React. Components emit meaning, a policy selects one registered affordance, and the runtime applies the typed transition.
 
 ## Install
 
 ```bash
-npm install reflow-runtime
+npm install noflow-runtime
 ```
 
-React 18.2 or newer is required. Reflow does not add a router, state manager, or model SDK to the client bundle.
+React 18.2 or newer is required. NoFlow does not add a router, state manager, or model SDK to the client bundle.
 
 ## Use it in a new app
 
 ```tsx
-import { SemanticButton, SemanticRuntime, HttpSemanticPolicy, useSemanticRuntime } from 'reflow-runtime'
+import { SemanticButton, SemanticRuntime, HttpSemanticPolicy, useSemanticRuntime } from 'noflow-runtime'
 
 type Surface = 'welcome' | 'checkout' | 'support'
 type World = Record<string, unknown> & { loggedIn: boolean }
@@ -52,7 +52,7 @@ The button has no domain-specific `onClick`. Its label, visible DOM context, pos
 Keep the Jev key on the server. The package includes a server-side policy and a standard Web Request handler, so it works in a Node, edge, or framework route without a Vite plugin.
 
 ```ts
-import { createSemanticPolicyHandler, JevSemanticPolicy } from 'reflow-runtime'
+import { createSemanticPolicyHandler, JevSemanticPolicy } from 'noflow-runtime'
 
 const policy = new JevSemanticPolicy({
   apiKey: process.env.TYPESAFE_API_KEY!,
@@ -99,7 +99,7 @@ This builds the ESM package, imports it from the generated artifact, checks a ru
 
 ## Status
 
-The package is installable and the runtime contract is reusable. The playground remains an example application, not a requirement for using Reflow.
+The package is installable and the runtime contract is reusable. The playground remains an example application, not a requirement for using NoFlow.
 
 ## License
 
