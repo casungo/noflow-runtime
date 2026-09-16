@@ -1,0 +1,101 @@
+import type {
+  Candidate,
+  PolicyDecision,
+  PrimitiveName,
+  SemanticEvent,
+  SemanticPolicy,
+} from './types'
+
+const primitives: PrimitiveName[] = [
+  'checkout',
+  'comparison',
+  'trial',
+  'support',
+  'login',
+  'dashboard',
+  'details',
+  'welcome',
+]
+
+type Signal = { pattern: RegExp; component: PrimitiveName; weight: number }
+
+const signals: Signal[] = [
+  { pattern: /buy|purchase|pay|checkout|subscribe|get pro|upgrade/i, component: 'checkout', weight: 0.92 },
+  { pattern: /compare|difference|plans|options|which plan/i, component: 'comparison', weight: 0.94 },
+  { pattern: /try|trial|start free|free/i, component: 'trial', weight: 0.9 },
+  { pattern: /help|support|talk|question|human/i, component: 'support', weight: 0.95 },
+  { pattern: /login|sign in|account/i, component: 'login', weight: 0.95 },
+  { pattern: /dashboard|continue|open app|workspace/i, component: 'dashboard', weight: 0.88 },
+  { pattern: /details|learn|more|explain|how/i, component: 'details', weight: 0.86 },
+]
+
+function clamp(value: number, min = 0, max = 0.99) {
+  return Math.min(max, Math.max(min, value))
+}
+
+function makeCandidates(event: SemanticEvent): Candidate[] {
+  const text = `${event.target.label} ${event.target.description ?? ''} ${event.nearbyText}`
+  const scores = new Map<PrimitiveName, number>(primitives.map((name) => [name, 0.05]))
+
+  for (const signal of signals) {
+    if (signal.pattern.test(text)) {
+      scores.set(signal.component, Math.max(scores.get(signal.component) ?? 0, signal.weight))
+    }
+  }
+
+  if (!event.world.user.loggedIn) {
+    scores.set('login', clamp((scores.get('login') ?? 0) + 0.12))
+  }
+
+  if (event.world.user.loggedIn && /continue|next|go/i.test(text)) {
+    scores.set('dashboard', 0.72)
+  }
+
+  if (event.world.user.trialUsed && /trial|free|try/i.test(text)) {
+    scores.set('checkout', 0.81)
+    scores.set('trial', 0.32)
+  }
+
+  if (event.world.user.hasPaymentMethod && /buy|upgrade|purchase|checkout/i.test(text)) {
+    scores.set('checkout', 0.97)
+  }
+
+  const ranked = [...scores.entries()]
+    .map(([component, probability]) => ({ component, probability }))
+    .sort((a, b) => b.probability - a.probability)
+
+  const [best] = ranked
+  if (best.probability <= 0.08) {
+    return ranked.map((candidate, index) =>
+      index === 0 ? { component: 'details', probability: 0.54 } : candidate,
+    )
+  }
+
+  return ranked
+}
+
+export class MockSemanticPolicy implements SemanticPolicy {
+  async decide(event: SemanticEvent): Promise<PolicyDecision> {
+    const started = performance.now()
+    const candidates = makeCandidates(event)
+    const delay = 72 + Math.floor(Math.random() * 54)
+    await new Promise((resolve) => setTimeout(resolve, delay))
+
+    const best = candidates[0]
+    const latencyMs = Math.round(performance.now() - started)
+
+    return {
+      action: {
+        type: 'present',
+        component: best.component,
+        reason: `The semantic signal in “${event.target.label}” most strongly implies ${best.component}.`,
+      },
+      confidence: best.probability,
+      candidates: candidates.slice(0, 4),
+      rationale:
+        'This local policy is only a runnable stand-in. Replace it with Jev and keep the exact same event/action contract.',
+      model: 'local-semantic-mock',
+      latencyMs,
+    }
+  }
+}
