@@ -1,5 +1,5 @@
 {
-  "name": "noflow-runtime",
+  "name": "reflow-runtime",
   "description": "A semantic interaction runtime for React",
   "private": false,
   "version": "0.1.0",

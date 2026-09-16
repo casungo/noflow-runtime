@@ -15,7 +15,7 @@ const initialWorld: DemoWorldState = {
     trialUsed: false,
   },
   product: {
-    name: 'NoFlow Cloud',
+    name: 'Reflow Cloud',
     price: 29,
     plan: 'pro',
   },
@@ -88,7 +88,7 @@ export default function App() {
         <div className="brand">
           <div className="brand__mark">N</div>
           <div>
-            <strong>NoFlow</strong>
+            <strong>Reflow</strong>
             <span>semantic runtime</span>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function App() {
               the affordances your app exposes.
             </p>
           </div>
-          <div className="hero__formula" aria-label="NoFlow formula">
+          <div className="hero__formula" aria-label="Reflow formula">
             <span>event</span>
             <i>→</i>
             <span>meaning</span>
@@ -301,7 +301,7 @@ export default function App() {
       </main>
 
       <footer>
-        <strong>NoFlow / concept runtime</strong>
+        <strong>Reflow / runtime</strong>
         <span>Built to make “idea → prototype” feel instantaneous.</span>
       </footer>
     </div>

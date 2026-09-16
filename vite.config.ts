@@ -29,7 +29,7 @@ function sendJson(res: ServerResponse, status: number, body: unknown) {
 
 function semanticPolicyApi(apiKey: string | undefined): Plugin {
   return {
-    name: 'noflow-semantic-policy-api',
+    name: 'reflow-semantic-policy-api',
     configureServer(server) {
       const policy = new JevSemanticPolicy({ apiKey: apiKey ?? '', descriptions })
 
