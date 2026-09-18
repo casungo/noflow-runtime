@@ -4,7 +4,55 @@ Tired of knowing exactly what your button does?
 
 NoFlow lets a button describe what happened, asks a policy what that probably means, and presents one of the UI affordances your app registered. A little ridiculous. Potentially useful.
 
-Change `Buy Pro` to `Compare plans` and the prototype can change with it. NoFlow does not draw another flowchart to celebrate.
+Change `Buy Pro` to `Compare plans` and the prototype can change with it. NoFlow does not draw another flowchart to celebrate. It does, however, draw exactly one diagram to explain itself. Here it is.
+
+## How it works
+
+The button reports. The policy guesses. The runtime decides what is actually allowed to happen.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant B as SemanticButton
+    participant R as SemanticRuntime
+    participant P as Policy (Jev / mock)
+    participant S as Surface
+
+    U->>B: click ("Buy Pro")
+    B->>R: dispatch(SemanticTarget, nearbyText)
+    Note over B: label, DOM context, position<br>extracted from the page
+    R->>P: SemanticEvent { target, world, affordances }
+    P-->>R: PolicyDecision { action, confidence, safety }
+    R->>R: safety gates (see below)
+    R->>S: present(affordance)
+    R-->>B: snapshot { surface, world, history }
+```
+
+Nothing in that sequence is a route. The policy only picks from the affordances your app registered; the runtime has the final word.
+
+## The seatbelt
+
+Every decision passes through the same gates before it reaches a surface.
+
+```mermaid
+flowchart TD
+    D[PolicyDecision arrives] --> T{Policy threw?}
+    T -- yes --> EF[Fallback surface<br>resolution: error-fallback]
+    T -- no --> A{Affordance registered?}
+    A -- no --> X[Throw. The runtime does not improvise.]
+    A -- yes --> C{confidence < threshold?}
+    C -- yes --> CF[Fallback surface or noop<br>resolution: confidence-fallback]
+    C -- no --> K{requiresConfirmation ≥ threshold?}
+    K -- yes --> U{User confirms?}
+    U -- yes --> OK[resolution: confirmed]
+    U -- no --> N[noop<br>resolution: confirmation-declined]
+    K -- no --> OK
+    EF --> S[Surface updates, world reduces, history grows]
+    CF --> S
+    OK --> S
+    N --> S
+```
 
 ## Install
 
