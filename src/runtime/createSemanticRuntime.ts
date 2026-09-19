@@ -73,6 +73,15 @@ export class SemanticRuntime<Surface extends string = string, World extends Worl
     this.emit({ ...this.snapshot, world })
   }
 
+  setGuardrails(
+    options: Pick<RuntimeOptions<Surface, World>, 'confidenceThreshold' | 'confirmationThreshold' | 'fallbackSurface'>,
+  ) {
+    if (options.fallbackSurface !== undefined && !this.options.affordances.includes(options.fallbackSurface)) {
+      throw new Error(`Fallback surface is not a registered affordance: ${options.fallbackSurface}`)
+    }
+    Object.assign(this.options, options)
+  }
+
   reset() {
     this.emit({
       surface: this.options.initialSurface,

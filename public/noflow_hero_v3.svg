@@ -1,0 +1,132 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#080B0C"/>
+      <stop offset="0.52" stop-color="#0A0E0E"/>
+      <stop offset="1" stop-color="#050809"/>
+    </linearGradient>
+    <radialGradient id="greenGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(882 288) rotate(90) scale(300 360)">
+      <stop stop-color="#A8FF3F" stop-opacity="0.11"/>
+      <stop offset="0.46" stop-color="#A8FF3F" stop-opacity="0.035"/>
+      <stop offset="1" stop-color="#A8FF3F" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#17201D" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#0D1312" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#1B2421" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#0C1110" stop-opacity="0.86"/>
+    </linearGradient>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="lineGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="4.5" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0.66  0 0 0 0 1  0 0 0 0 0.25  0 0 0 .55 0" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="cardShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="12" stdDeviation="22" flood-color="#000" flood-opacity="0.48"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#B6FF3D"/>
+    </marker>
+    <pattern id="dotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#9DB3AA" fill-opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="612" y="0" width="588" height="630" fill="url(#greenGlow)"/>
+  <rect x="638" y="56" width="500" height="500" fill="url(#dotGrid)" opacity="0.18"/>
+
+  <!-- subtle orbital guides -->
+  <circle cx="892" cy="304" r="238" stroke="#7E958B" stroke-opacity="0.11"/>
+  <circle cx="892" cy="304" r="182" stroke="#95A9A0" stroke-opacity="0.08"/>
+  <path d="M714 138C763 94 823 67 892 60" stroke="#A8FF3F" stroke-opacity="0.12"/>
+  <path d="M741 493C792 534 846 555 916 559" stroke="#788B83" stroke-opacity="0.12" stroke-dasharray="3 9"/>
+
+  <!-- left rail -->
+  <rect x="76" y="106" width="5" height="411" rx="2.5" fill="#B7FF35"/>
+
+  <!-- typography -->
+  <g font-family="Inter, Arial, Helvetica, sans-serif">
+    <text x="112" y="179" fill="#B7FF35" font-size="34" font-weight="700" letter-spacing="0.5">NOFLOW</text>
+
+    <text x="112" y="314" fill="#F5F7F4" font-size="74" font-weight="800" letter-spacing="-2.2">Buttons</text>
+    <text x="112" y="392" fill="#F5F7F4" font-size="74" font-weight="800" letter-spacing="-2.2">with opinions</text>
+
+    <text x="112" y="431" fill="#B7FF35" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" letter-spacing="1.6">CLICK   →   MEANING   →   UI</text>
+    <text x="112" y="491" fill="#C1C8C3" font-size="18" font-weight="400" letter-spacing="0.1">A semantic UI runtime for intent-driven interfaces.</text>
+    <text x="112" y="537" fill="#758079" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" letter-spacing="0.35">noflow.casungo.workers.dev</text>
+  </g>
+
+  <!-- start node -->
+  <g>
+    <circle cx="676" cy="278" r="24" stroke="#B7FF35" stroke-opacity="0.12"/>
+    <circle cx="676" cy="278" r="16" stroke="#B7FF35" stroke-opacity="0.45"/>
+    <circle cx="676" cy="278" r="8" fill="#B7FF35" filter="url(#softGlow)"/>
+  </g>
+
+  <!-- main flow -->
+  <g stroke="#B7FF35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#lineGlow)">
+    <path d="M692 278 H759" marker-end="url(#arrow)"/>
+    <path d="M807 278 C836 278 835 229 835 212 C835 195 847 183 865 183 H893" marker-end="url(#arrow)"/>
+    <path d="M941 207 V289 C941 307 952 319 970 319 H987" marker-end="url(#arrow)"/>
+    <path d="M1035 319 H1048" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- connector dots -->
+  <circle cx="835" cy="212" r="2.4" fill="#B7FF35"/>
+  <circle cx="941" cy="289" r="2.4" fill="#B7FF35"/>
+
+  <!-- node 1 -->
+  <g filter="url(#cardShadow)">
+    <rect x="759" y="253" width="50" height="50" rx="11" fill="url(#glass)" stroke="#9CAC9F" stroke-opacity="0.55"/>
+    <circle cx="784" cy="278" r="8" fill="#A7B1AD"/>
+  </g>
+
+  <!-- node 2 -->
+  <g filter="url(#cardShadow)">
+    <rect x="893" y="158" width="50" height="50" rx="11" fill="url(#glass)" stroke="#9CAC9F" stroke-opacity="0.55"/>
+    <rect x="911" y="176" width="14" height="14" transform="rotate(45 911 176)" fill="#C2CBC7"/>
+  </g>
+
+  <!-- node 3 -->
+  <g filter="url(#cardShadow)">
+    <rect x="987" y="294" width="50" height="50" rx="11" fill="url(#glass)" stroke="#9CAC9F" stroke-opacity="0.55"/>
+    <path d="M1012 307 L1021 327 H1003 Z" fill="#B8C0BC"/>
+  </g>
+
+  <!-- dashboard panel -->
+  <g filter="url(#cardShadow)">
+    <g transform="translate(1048 207)">
+      <rect x="10" y="8" width="126" height="180" rx="14" fill="#0C1210" fill-opacity="0.32" transform="rotate(3 10 8)"/>
+      <rect x="0" y="0" width="144" height="194" rx="14" fill="url(#panel)" stroke="#A3B4AA" stroke-opacity="0.58"/>
+      <rect x="0" y="0" width="144" height="34" rx="14" fill="#8AA198" fill-opacity="0.06"/>
+      <circle cx="16" cy="16" r="5" fill="#B7FF35" filter="url(#softGlow)"/>
+      <rect x="18" y="50" width="69" height="8" rx="4" fill="#84908B" fill-opacity="0.52"/>
+      <rect x="18" y="66" width="55" height="7" rx="3.5" fill="#84908B" fill-opacity="0.36"/>
+      <rect x="18" y="91" width="63" height="49" rx="7" fill="#8EA096" fill-opacity="0.12"/>
+      <rect x="100" y="50" width="24" height="28" rx="6" fill="#88958F" fill-opacity="0.13"/>
+      <rect x="100" y="83" width="24" height="20" rx="5" fill="#88958F" fill-opacity="0.13"/>
+      <rect x="102" y="111" width="20" height="20" rx="5" fill="#B7FF35"/>
+      <rect x="100" y="139" width="24" height="20" rx="5" fill="#88958F" fill-opacity="0.13"/>
+    </g>
+  </g>
+
+  <!-- decorative route -->
+  <path d="M1120 64 V116 C1120 135 1110 145 1091 145 H1059 C1041 145 1031 155 1031 174 V223" stroke="#8EA197" stroke-opacity="0.28" stroke-dasharray="4 6"/>
+  <circle cx="1120" cy="64" r="4.5" fill="#96A49E"/>
+  <circle cx="1031" cy="223" r="3.5" fill="#7C8A84"/>
+  <path d="M1035 343 V425 C1035 446 1046 457 1067 457 H1095 C1114 457 1125 468 1125 487 V536" stroke="#8EA197" stroke-opacity="0.28" stroke-dasharray="4 6"/>
+  <circle cx="1125" cy="536" r="3.5" fill="#7C8A84"/>
+
+  <!-- sparse accents -->
+  <rect x="930" y="97" width="7" height="7" fill="#8FA29A" fill-opacity="0.38"/>
+  <rect x="1137" y="502" width="8" height="8" fill="#8FA29A" fill-opacity="0.26"/>
+  <circle cx="632" cy="394" r="3" fill="#A7B1AD" fill-opacity="0.6"/>
+</svg>

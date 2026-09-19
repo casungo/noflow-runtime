@@ -149,6 +149,15 @@ npm run dev
 
 The playground uses a local heuristic policy by default. Change the copy, click the button, toggle world state, or simulate a policy outage. The debug panel is intentionally left on. This is where the idea gets to look a bit silly before it has to behave.
 
+The hosted playground is deployed as a Cloudflare Worker with static assets:
+
+```bash
+npx wrangler secret put TYPESAFE_API_KEY
+npm run deploy:playground
+```
+
+The key stays in Cloudflare and is never bundled into the browser. Open [noflow.casungo.workers.dev](https://noflow.casungo.workers.dev).
+
 To use the included Vite development endpoint backed by Jev, create `.env.local`:
 
 ```env

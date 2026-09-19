@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { SemanticButton } from './components/SemanticButton'
 import { Surface } from './components/Surface'
 import { SemanticRuntime } from './runtime/createSemanticRuntime'
@@ -34,9 +34,46 @@ const suggestions = [
   'Continue',
 ]
 
-const confidenceThreshold = 0.65
-const confirmationThreshold = 0.7
-const fallbackSurface: PrimitiveName = 'welcome'
+const semanticActions = [
+  {
+    id: 'compare-action',
+    label: 'Compare plans',
+    title: 'Still deciding?',
+    description: 'Lay out the differences before you commit.',
+    position: 'secondary' as const,
+    descriptionForPolicy: 'Secondary plan comparison action for a user still evaluating options.',
+  },
+  {
+    id: 'trial-action',
+    label: 'Start free trial',
+    title: 'Try it on your own',
+    description: 'Explore the workspace before paying for it.',
+    position: 'secondary' as const,
+    descriptionForPolicy: 'Low-commitment product exploration action for a new or undecided user.',
+  },
+  {
+    id: 'support-action',
+    label: 'Talk to a human',
+    title: 'Have a question?',
+    description: 'Send the problem to someone who can answer it.',
+    position: 'footer' as const,
+    descriptionForPolicy: 'Footer support action for a user who needs human help.',
+  },
+]
+
+const affordances: PrimitiveName[] = [
+  'checkout',
+  'comparison',
+  'trial',
+  'support',
+  'login',
+  'dashboard',
+  'details',
+  'welcome',
+]
+const defaultConfidenceThreshold = 0.65
+const defaultConfirmationThreshold = 0.7
+const defaultFallbackSurface: PrimitiveName = 'welcome'
 
 function formatJson(value: unknown) {
   return JSON.stringify(value, null, 2)
@@ -44,6 +81,10 @@ function formatJson(value: unknown) {
 
 export default function App() {
   const [simulateFailure, setSimulateFailure] = useState(false)
+  const [confidenceThreshold, setConfidenceThreshold] = useState(defaultConfidenceThreshold)
+  const [confirmationThreshold, setConfirmationThreshold] = useState(defaultConfirmationThreshold)
+  const [fallbackSurface, setFallbackSurface] = useState<PrimitiveName>(defaultFallbackSurface)
+  const [showSafetyWarning, setShowSafetyWarning] = useState(false)
   const simulateFailureRef = useRef(simulateFailure)
   simulateFailureRef.current = simulateFailure
 
@@ -62,17 +103,12 @@ export default function App() {
     }
 
     return new SemanticRuntime<PrimitiveName, DemoWorldState>(policy, initialWorld, {
-      affordances: ['checkout', 'comparison', 'trial', 'support', 'login', 'dashboard', 'details', 'welcome'],
+      affordances,
       initialSurface: 'welcome',
-      confidenceThreshold,
-      confirmationThreshold,
-      fallbackSurface,
-      confirm: (event, decision) =>
-        window.confirm(
-          `Confirm semantic action?\n\n"${event.target.label}" → ${
-            decision.action.type === 'present' ? decision.action.component : decision.action.type
-          }`,
-        ),
+      confidenceThreshold: defaultConfidenceThreshold,
+      confirmationThreshold: defaultConfirmationThreshold,
+      fallbackSurface: defaultFallbackSurface,
+      confirm: () => true,
       reduceWorld: (world, decision) => ({
         ...world,
         session: {
@@ -87,6 +123,10 @@ export default function App() {
   const [label, setLabel] = useState('Buy Pro')
   const [position, setPosition] = useState<'primary' | 'secondary' | 'footer'>('primary')
 
+  useEffect(() => {
+    runtime.setGuardrails({ confidenceThreshold, confirmationThreshold, fallbackSurface })
+  }, [runtime, confidenceThreshold, confirmationThreshold, fallbackSurface])
+
   const updateUser = (key: keyof DemoWorldState['user'], value: boolean) => {
     runtime.setWorld({
       ...snapshot.world,
@@ -98,11 +138,14 @@ export default function App() {
   }
 
   const targetPreview = {
-    id: 'hero-cta',
-    role: 'button',
-    label,
-    position,
-    description: 'Primary product CTA. No destination or action is encoded here.',
+    ...(snapshot.history[0]?.event.target ?? {
+      id: 'hero-cta',
+      role: 'button' as const,
+      label,
+      position,
+      description: 'Primary product CTA. No destination or action is encoded here.',
+    }),
+    nearbyText: snapshot.history[0]?.event.nearbyText ?? 'No click yet. The editable CTA is the next event.',
   }
 
   return (
@@ -199,6 +242,34 @@ export default function App() {
 
                 <Surface name={snapshot.surface} world={snapshot.world} />
 
+                <section className="action-deck" data-semantic-context>
+                  <div className="action-deck__header">
+                    <div>
+                      <span className="eyebrow">More than a CTA</span>
+                      <h3>Give Jev a real page to read.</h3>
+                    </div>
+                    <span className="action-deck__hint">same runtime · new evidence</span>
+                  </div>
+                  <div className="action-grid">
+                    {semanticActions.map((action) => (
+                      <article className="action-card" key={action.id}>
+                        <span className="action-card__kind">{action.position} action</span>
+                        <strong>{action.title}</strong>
+                        <p>{action.description}</p>
+                        <SemanticButton
+                          id={action.id}
+                          runtime={runtime}
+                          description={action.descriptionForPolicy}
+                          position={action.position}
+                          className="semantic-action"
+                        >
+                          {action.label}
+                        </SemanticButton>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
                 <div className={`cta-stage cta-stage--${position}`} data-semantic-context>
                   <div className="cta-copy">
                     <span>€{snapshot.world.product.price}/month · cancel anytime</span>
@@ -265,15 +336,70 @@ export default function App() {
 
             <div className="debug-block">
               <div className="inspector-label"><span>guardrails for the vibes</span><span>debug</span></div>
-              <div className="debug-row"><span>confidence minimum</span><strong>{confidenceThreshold * 100}%</strong></div>
-              <div className="debug-row"><span>confirmation minimum</span><strong>{confirmationThreshold * 100}%</strong></div>
-              <div className="debug-row"><span>fallback surface</span><strong>{fallbackSurface}</strong></div>
+              <label className="guardrail-control" htmlFor="confidence-threshold">
+                <span><span>confidence minimum</span><strong>{Math.round(confidenceThreshold * 100)}%</strong></span>
+                <input
+                  id="confidence-threshold"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={confidenceThreshold}
+                  onChange={(event) => setConfidenceThreshold(Number(event.target.value))}
+                />
+              </label>
+              <label className="guardrail-control" htmlFor="confirmation-threshold">
+                <span><span>confirmation minimum</span><strong>{Math.round(confirmationThreshold * 100)}%</strong></span>
+                <input
+                  id="confirmation-threshold"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={confirmationThreshold}
+                  onChange={(event) => setConfirmationThreshold(Number(event.target.value))}
+                />
+              </label>
+              <label className="guardrail-select" htmlFor="fallback-surface">
+                <span>fallback surface</span>
+                <select
+                  id="fallback-surface"
+                  value={fallbackSurface}
+                  onChange={(event) => setFallbackSurface(event.target.value)}
+                >
+                  {affordances.map((surface) => <option key={surface}>{surface}</option>)}
+                </select>
+              </label>
+              <Toggle
+                label="show confirmation warning"
+                checked={showSafetyWarning}
+                onChange={setShowSafetyWarning}
+              />
+              <p className="guardrail-hint">Off means no popup. Turn it on to show what the guardrail would have asked.</p>
             </div>
 
             <div className="decision-card">
               <div className="inspector-label"><span>latest guess</span><span>output</span></div>
               {snapshot.lastDecision ? (
                 <>
+                  {showSafetyWarning && snapshot.lastDecision.resolution === 'confirmed' && (
+                    <div className="safety-notice" role="status">
+                      <strong>Qua avrebbe chiesto conferma.</strong>
+                      <span>
+                        La policy ha stimato {Math.round((snapshot.lastDecision.safety?.requiresConfirmation ?? 0) * 100)}%
+                        , sopra il minimo del {Math.round(confirmationThreshold * 100)}%.
+                      </span>
+                    </div>
+                  )}
+                  {showSafetyWarning && snapshot.lastDecision.resolution === 'confidence-fallback' && (
+                    <div className="safety-notice" role="status">
+                      <strong>Confidence sotto soglia.</strong>
+                      <span>
+                        L&apos;azione è finita su {fallbackSurface} perché la policy era al {Math.round(snapshot.lastDecision.confidence * 100)}%,
+                        sotto il minimo del {Math.round(confidenceThreshold * 100)}%.
+                      </span>
+                    </div>
+                  )}
                   <div className="decision-main">
                     <div>
                       <span>applied action</span>

@@ -8,9 +8,10 @@
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
+    "moduleDetection": "auto",
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "types": ["node", "@cloudflare/workers-types"]
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "src/worker.ts", "worker-configuration.d.ts"]
 }
