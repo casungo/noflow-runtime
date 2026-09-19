@@ -8,44 +8,44 @@ type SurfaceProps = {
 
 const copy: Record<PrimitiveName, { eyebrow: string; title: string; body: string }> = {
   welcome: {
-    eyebrow: 'Semantic surface',
-    title: 'Your product, without the arrow maze.',
-    body: 'The interface exposes affordances. The policy makes a guess about which one should show up next.',
+    eyebrow: 'Registered surfaces',
+    title: 'Your app decides what can appear next.',
+    body: 'NoFlow sends a semantic event to a policy, then applies only a registered surface that passes the runtime checks.',
   },
   checkout: {
-    eyebrow: 'Chosen at runtime',
-    title: 'Checkout appeared.',
-    body: 'The button did not point here. Its meaning plus the world state got the vote.',
+    eyebrow: 'Purchase flow',
+    title: 'Checkout is ready.',
+    body: 'The event looked like a purchase, and the runtime selected the registered checkout surface.',
   },
   comparison: {
-    eyebrow: 'Chosen at runtime',
-    title: 'A comparison is more useful now.',
-    body: 'The same button can become a different transition when its copy changes. Slightly cursed, quite handy.',
+    eyebrow: 'Plan comparison',
+    title: 'Compare the plans.',
+    body: 'The event carried evaluation intent, so the runtime selected the comparison surface.',
   },
   trial: {
-    eyebrow: 'Chosen at runtime',
-    title: 'Start a free trial.',
-    body: 'The runtime guessed that exploration was the mood and showed the trial affordance.',
+    eyebrow: 'Trial flow',
+    title: 'Start with a trial.',
+    body: 'The event suggested low-commitment exploration, so the runtime selected the trial surface.',
   },
   support: {
-    eyebrow: 'Chosen at runtime',
-    title: 'Human help, immediately.',
-    body: 'Help is part of the interaction loop, not a chatbot maze bolted on later.',
+    eyebrow: 'Support flow',
+    title: 'Talk to support.',
+    body: 'The event asked for human help, so the runtime selected the support surface.',
   },
   login: {
-    eyebrow: 'Chosen at runtime',
+    eyebrow: 'Authentication',
     title: 'Sign in before continuing.',
-    body: 'World state can overrule the most obvious interpretation of a click.',
+    body: 'The user is not signed in, so login takes priority over the original action.',
   },
   dashboard: {
-    eyebrow: 'Chosen at runtime',
-    title: 'Welcome back to your workspace.',
-    body: 'A vague "Continue" can mean something different when the user is already logged in.',
+    eyebrow: 'Workspace',
+    title: 'Open your workspace.',
+    body: 'The user is signed in, so continue resolves to the registered workspace surface.',
   },
   details: {
-    eyebrow: 'Chosen at runtime',
-    title: 'Show more context, not another funnel step.',
-    body: 'When the intent is fuzzy, the UI can explain instead of forcing another route.',
+    eyebrow: 'Product details',
+    title: 'Show the details.',
+    body: 'The event was uncertain, so the runtime selected an explanatory surface.',
   },
 }
 
@@ -54,7 +54,6 @@ export function Surface({ name, world }: SurfaceProps) {
 
   return (
     <section className={`surface surface--${name}`} data-surface={name}>
-      <div className="surface__noise" />
       <div className="surface__topline">
         <span className="eyebrow">{content.eyebrow}</span>
         <span className="surface__chip">{name}</span>

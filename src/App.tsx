@@ -155,7 +155,7 @@ export default function App() {
           <div className="brand__mark">N</div>
           <div>
             <strong>NoFlow</strong>
-            <span>buttons with opinions</span>
+            <span>semantic UI runtime</span>
           </div>
         </div>
         <div className="header-line">
@@ -163,32 +163,32 @@ export default function App() {
           {import.meta.env.VITE_POLICY_MODE === 'jev' ? 'jev policy online' : 'local policy online'}
         </div>
         <a className="github-pill" href="https://github.com/casungo/noflow-runtime" target="_blank" rel="noreferrer">
-          GitHub / 0.1
+          GitHub / runtime
         </a>
       </header>
 
       <main>
         <section className="hero">
           <div className="hero__copy">
-            <span className="kicker">BUTTONS WITH OPINIONS</span>
+            <span className="kicker">SEMANTIC UI RUNTIME</span>
             <h1>
-              Tired of knowing exactly what your button does?
+              Let the interface describe intent.
               <br />
-              <em>Let it have a little say.</em>
+              <em>Keep the next step within your app.</em>
             </h1>
             <p>
-              NoFlow turns a click into meaning, asks a policy to pick from the things your app actually knows
-              how to show, and then tries not to embarrass itself. Maybe someone builds something crazy with it.
+              NoFlow sends a click, its surrounding context, and current app state to a policy. The policy chooses
+              one registered surface. The runtime checks the result before changing the UI.
             </p>
           </div>
           <div className="hero__formula" aria-label="NoFlow formula">
-            <span>click</span>
+            <span>event</span>
             <i>→</i>
-            <span>vibes</span>
+            <span>policy</span>
             <i>→</i>
-            <span>guardrails</span>
+            <span>checks</span>
             <i>→</i>
-            <span>UI</span>
+            <span>surface</span>
           </div>
         </section>
 
@@ -197,20 +197,20 @@ export default function App() {
             <div className="panel__header">
               <div>
                 <span className="panel__index">01</span>
-                <h2>Tiny chaos lab</h2>
+                <h2>Decision playground</h2>
               </div>
               <button className="text-button" onClick={() => runtime.reset()}>
-                reset
+                Reset
               </button>
             </div>
 
             <div className="editor-grid">
               <label className="field field--wide">
-                <span>Change the words. See what it thinks.</span>
+                <span>Change the label sent to the policy.</span>
                 <input value={label} onChange={(event) => setLabel(event.target.value)} />
               </label>
               <label className="field">
-                <span>How important is it?</span>
+                <span>Semantic position</span>
                 <select value={position} onChange={(event) => setPosition(event.target.value as typeof position)}>
                   <option value="primary">primary</option>
                   <option value="secondary">secondary</option>
@@ -230,8 +230,8 @@ export default function App() {
             <div className="prototype-frame">
               <div className="prototype-frame__bar">
                 <div className="traffic"><i /><i /><i /></div>
-                <span>acme.local/pricing</span>
-                <span className="prototype-frame__mode">semantic</span>
+                  <span>acme.local/pricing</span>
+                  <span className="prototype-frame__mode">Runtime</span>
               </div>
 
               <div className="product-shell">
@@ -245,10 +245,10 @@ export default function App() {
                 <section className="action-deck" data-semantic-context>
                   <div className="action-deck__header">
                     <div>
-                      <span className="eyebrow">More than a CTA</span>
-                      <h3>Give Jev a real page to read.</h3>
+                      <span className="eyebrow">Several semantic controls</span>
+                      <h3>Test several intents on one page.</h3>
                     </div>
-                    <span className="action-deck__hint">same runtime · new evidence</span>
+                    <span className="action-deck__hint">one runtime, different context</span>
                   </div>
                   <div className="action-grid">
                     {semanticActions.map((action) => (
@@ -272,8 +272,8 @@ export default function App() {
 
                 <div className={`cta-stage cta-stage--${position}`} data-semantic-context>
                   <div className="cta-copy">
-                    <span>€{snapshot.world.product.price}/month · cancel anytime</span>
-                    <small>No handler. The button is free-range.</small>
+                      <span>€{snapshot.world.product.price} / month, cancel anytime</span>
+                    <small>This control reports intent. The runtime chooses the surface.</small>
                   </div>
                   <SemanticButton
                     id="hero-cta"
@@ -290,7 +290,7 @@ export default function App() {
               {snapshot.pending && (
                 <div className="thinking-overlay">
                   <div className="pulse-ring" />
-                  <span>asking the button what it meant...</span>
+                  <span>Evaluating the event...</span>
                 </div>
               )}
             </div>
@@ -300,18 +300,18 @@ export default function App() {
             <div className="panel__header">
               <div>
                 <span className="panel__index">02</span>
-                <h2>What did it think?</h2>
+                <h2>Decision inspector</h2>
               </div>
-              <span className="live-badge">LIVE</span>
+              <span className="live-badge">Running</span>
             </div>
 
             <div className="inspector-block">
-              <div className="inspector-label"><span>button evidence</span><span>input</span></div>
+              <div className="inspector-label"><span>event input</span><span>input</span></div>
               <pre>{formatJson(targetPreview)}</pre>
             </div>
 
             <div className="world-controls">
-              <div className="inspector-label"><span>world state, allegedly</span><span>editable</span></div>
+                <div className="inspector-label"><span>world state</span><span>editable</span></div>
               <Toggle
                 label="logged in"
                 checked={snapshot.world.user.loggedIn}
@@ -335,7 +335,7 @@ export default function App() {
             </div>
 
             <div className="debug-block">
-              <div className="inspector-label"><span>guardrails for the vibes</span><span>debug</span></div>
+              <div className="inspector-label"><span>runtime guardrails</span><span>debug</span></div>
               <label className="guardrail-control" htmlFor="confidence-threshold">
                 <span><span>confidence minimum</span><strong>{Math.round(confidenceThreshold * 100)}%</strong></span>
                 <input
@@ -375,34 +375,34 @@ export default function App() {
                 checked={showSafetyWarning}
                 onChange={setShowSafetyWarning}
               />
-              <p className="guardrail-hint">Off means no popup. Turn it on to show what the guardrail would have asked.</p>
+              <p className="guardrail-hint">Enable this to show the guardrail message in the decision panel.</p>
             </div>
 
             <div className="decision-card">
-              <div className="inspector-label"><span>latest guess</span><span>output</span></div>
+              <div className="inspector-label"><span>latest decision</span><span>output</span></div>
               {snapshot.lastDecision ? (
                 <>
                   {showSafetyWarning && snapshot.lastDecision.resolution === 'confirmed' && (
                     <div className="safety-notice" role="status">
-                      <strong>Qua avrebbe chiesto conferma.</strong>
+                      <strong>Confirmation would be required.</strong>
                       <span>
-                        La policy ha stimato {Math.round((snapshot.lastDecision.safety?.requiresConfirmation ?? 0) * 100)}%
-                        , sopra il minimo del {Math.round(confirmationThreshold * 100)}%.
+                        The policy estimated {Math.round((snapshot.lastDecision.safety?.requiresConfirmation ?? 0) * 100)}%,
+                        above the {Math.round(confirmationThreshold * 100)}% threshold.
                       </span>
                     </div>
                   )}
                   {showSafetyWarning && snapshot.lastDecision.resolution === 'confidence-fallback' && (
                     <div className="safety-notice" role="status">
-                      <strong>Confidence sotto soglia.</strong>
+                      <strong>Confidence below threshold.</strong>
                       <span>
-                        L&apos;azione è finita su {fallbackSurface} perché la policy era al {Math.round(snapshot.lastDecision.confidence * 100)}%,
-                        sotto il minimo del {Math.round(confidenceThreshold * 100)}%.
+                        The runtime used {fallbackSurface} because the policy returned {Math.round(snapshot.lastDecision.confidence * 100)}%,
+                        below the {Math.round(confidenceThreshold * 100)}% threshold.
                       </span>
                     </div>
                   )}
                   <div className="decision-main">
                     <div>
-                      <span>applied action</span>
+                      <span>applied surface</span>
                       <strong>
                         {snapshot.lastDecision.action.type === 'present'
                           ? snapshot.lastDecision.action.component
@@ -452,7 +452,7 @@ export default function App() {
                   </div>
                 </>
               ) : (
-                <div className="empty-state">Click it. See what it thinks. It can only choose registered stuff.</div>
+                <div className="empty-state">Activate a control to inspect its event and decision.</div>
               )}
             </div>
           </aside>
@@ -461,33 +461,33 @@ export default function App() {
         <section className="principles">
           <article>
             <span>01</span>
-            <h3>Fewer arrows</h3>
-            <p>Register what the app can do. Stop drawing every possible route.</p>
+            <h3>Register safe outcomes</h3>
+            <p>The policy can choose only the surfaces your app exposes.</p>
           </article>
           <article>
             <span>02</span>
-            <h3>Words do some work</h3>
-            <p>Copy, context, position, and world state give the button something to go on.</p>
+            <h3>Context carries intent</h3>
+            <p>Labels, placement, nearby text, and world state travel with each event.</p>
           </article>
           <article>
             <span>03</span>
-            <h3>Fast enough to be weird</h3>
-            <p>Swap the local guess for Jev behind one endpoint. Keep the same runtime.</p>
+            <h3>Keep policy replaceable</h3>
+            <p>Use the local policy in development and Jev behind your server endpoint.</p>
           </article>
         </section>
 
         <section className="code-strip">
           <div>
-            <span className="kicker">THE ENTIRE BET</span>
-            <h2>Change the words.<br />Watch the UI pick a side.</h2>
+            <span className="kicker">The small contract</span>
+            <h2>One event in.<br />One registered surface out.</h2>
           </div>
-          <pre><code>{`<SemanticButton id="hero-cta">\n  {label}\n</SemanticButton>\n\n// no onClick. trust the affordances.`}</code></pre>
+          <pre><code>{`<SemanticButton id="hero-cta">\n  {label}\n</SemanticButton>\n\n// the runtime validates the surface`}</code></pre>
         </section>
       </main>
 
       <footer>
         <strong>NoFlow / runtime</strong>
-        <span>For ideas that are brilliant, cursed, or both.</span>
+        <span>A small runtime for intent-driven UI.</span>
       </footer>
     </div>
   )

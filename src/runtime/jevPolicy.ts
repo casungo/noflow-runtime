@@ -101,7 +101,7 @@ export class JevSemanticPolicy<
       },
       confidence: answer.confidence,
       candidates,
-      rationale: `ambiguity=${ambiguity.toFixed(3)} · confirmation=${confirmation.toFixed(3)}`,
+      rationale: `ambiguity=${ambiguity.toFixed(3)}, confirmation=${confirmation.toFixed(3)}`,
       model: payload.model ?? this.model,
       latencyMs: Math.round(performance.now() - started),
       safety: {

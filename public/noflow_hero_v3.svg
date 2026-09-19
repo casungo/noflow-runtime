@@ -56,10 +56,10 @@
   <g font-family="Inter, Arial, Helvetica, sans-serif">
     <text x="112" y="179" fill="#B7FF35" font-size="34" font-weight="700" letter-spacing="0.5">NOFLOW</text>
 
-    <text x="112" y="314" fill="#F5F7F4" font-size="74" font-weight="800" letter-spacing="-2.2">Buttons</text>
-    <text x="112" y="392" fill="#F5F7F4" font-size="74" font-weight="800" letter-spacing="-2.2">with opinions</text>
+    <text x="112" y="314" fill="#F5F7F4" font-size="74" font-weight="800" letter-spacing="-2.2">Intent-driven</text>
+    <text x="112" y="392" fill="#F5F7F4" font-size="74" font-weight="800" letter-spacing="-2.2">UI runtime</text>
 
-    <text x="112" y="431" fill="#B7FF35" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" letter-spacing="1.6">CLICK   →   MEANING   →   UI</text>
+    <text x="112" y="431" fill="#B7FF35" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" letter-spacing="1.6">EVENT   →   POLICY   →   UI</text>
     <text x="112" y="491" fill="#C1C8C3" font-size="18" font-weight="400" letter-spacing="0.1">A semantic UI runtime for intent-driven interfaces.</text>
     <text x="112" y="537" fill="#758079" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" letter-spacing="0.35">noflow.casungo.workers.dev</text>
   </g>
